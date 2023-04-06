@@ -2,6 +2,7 @@ from typing import Tuple
 
 import torch
 from torch import nn
+from torch_geometric.data import Data
 
 
 class Encoder(nn.Module):
@@ -28,7 +29,8 @@ class Encoder(nn.Module):
 
         return mean, std
 
-    def forward(self, x, edge_index, edge_attr):
+    def forward(self, data: Data):
+        x, edge_index, edge_attr = data.x, data.edge_index, data.edge_attr
         mu, logvar = self.encode(x, edge_index, edge_attr)
         return mu, logvar
 
@@ -61,8 +63,8 @@ class VGAE(nn.Module):
         else:
             return mu
 
-    def forward(self, x, edge_index, edge_attr: torch.Tensor = None):
-        mu, logvar = self.encoder(x, edge_index, edge_attr)
+    def forward(self, data: Data):
+        mu, logvar = self.encoder(data)
         z = self.reparametrize(mu, logvar)
         adj = self.decoder(z)
         return adj, mu, logvar
