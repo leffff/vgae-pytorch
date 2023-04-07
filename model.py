@@ -6,11 +6,11 @@ from torch_geometric.data import Data
 
 
 class Encoder(nn.Module):
-    def __init__(self, hidden_model, mean_layers, std_model):
+    def __init__(self, hidden_model, mean_model, std_model):
         super().__init__()
 
         self.hidden_model = hidden_model
-        self.mean_layers = mean_layers
+        self.mean_model = mean_model
         self.std_model = std_model
 
     def encode(self,
@@ -44,7 +44,11 @@ class Decoder(nn.Module):
 
     def forward(self, z: torch.Tensor) -> torch.Tensor:
         z = self.dropout(z)
-        adj_reconstructed = self.activation(torch.bmm(z, z.T))
+        adj_reconstructed = torch.matmul(z, z.T)
+
+        if self.training:
+            adj_reconstructed = self.activation(adj_reconstructed)
+
         return adj_reconstructed
 
 
