@@ -1,2 +1,2 @@
 # vgae-pytorch
-My Vraiational Graph Auto Encoder
+My implementation of [Vraiational Graph Auto-Encoders](https://arxiv.org/pdf/1611.07308.pdf) paper
