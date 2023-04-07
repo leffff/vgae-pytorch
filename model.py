@@ -6,26 +6,22 @@ from torch_geometric.data import Data
 
 
 class Encoder(nn.Module):
-    def __init__(self, hidden_model, mean_model, std_model):
+    def __init__(self, hidden_model, mean_model, std_model, use_edge_attr: bool = False):
         super().__init__()
 
         self.hidden_model = hidden_model
         self.mean_model = mean_model
         self.std_model = std_model
+        self.use_edge_attr = use_edge_attr
 
     def encode(self,
                x: torch.Tensor,
                edge_index: torch.LongTensor,
                edge_attr: torch.Tensor = None) -> Tuple[torch.Tensor, torch.Tensor]:
 
-        if isinstance(edge_attr, type(None)):
-            hidden = self.hidden_model(x, edge_index, edge_attr)
-            mean = self.mean_model(hidden, edge_index, edge_attr)
-            std = self.std_model(hidden, edge_index, edge_attr)
-        else:
-            hidden = self.hidden_model(x, edge_index)
-            mean = self.mean_model(hidden, edge_index)
-            std = self.std_model(hidden, edge_index)
+        hidden = self.hidden_model(x, edge_index, edge_attr)
+        mean = self.mean_model(hidden, edge_index, edge_attr)
+        std = self.std_model(hidden, edge_index, edge_attr)
 
         return mean, std
 
